@@ -1,33 +1,33 @@
 "use client";
-import Image from "next/image";
 import {io} from "socket.io-client";
-import { useEffect } from "react";
+
 
 export default function Home () {
+  // Connect to the server socket 
+  const socket = io("http://localhost:5000"); 
 
-  // Connect to the server when the component is mounted 
-  useEffect(()=> {
+  // Listen to the connect event from the server 
+  socket.on("connect", () => {
+    console.log('Connected to the server'); // log after connecting to the server socket
+  });
 
-    // Connect to the server using socket.io client library
-    const socket = io("http://localhost:5000");
-  
-    // Log the connection status when the server is connected
-    socket.on("connect", () => {
-      console.log("Connected to the server");
-    });
+  // Listen to the message event from the server
+  socket.on("message", (data) => {
+    // log the data from the server 
+    console.log('Message from the server: ', data);
+    // Emit a message to the server 
+    socket.emit("message", "Hello from the client side"); 
+  });  
 
-    // Log the disconnection status when the server is disconnected
-    socket.on("disconnect", () => {
-      console.log("Disconnected from the server");
-    }
-    );
-    
-  }, []) // Empty array means this effect will only run once when the component is mounted
+  // Listen to the disconnect event from the server
+  socket.on("disconnect", () => {
+    console.log('Disconnected from the server'); // log after disconnecting from the server socket
+  });
 
+ 
   return (
-  <div className="bg-black text-white min-h-screen flex flex-col items-center justify-center">
-    <h1 >Home</h1>
-    <Image src="/globe.svg" alt="logo" width="100" height="100" />  
-  </div>)
+    <div className="bg-black text-white h-screen flex items-center justify-center">
+      <h1 className="font-extrabold">WEB SOCKETS BASICS</h1>    
+    </div>)
     
 }

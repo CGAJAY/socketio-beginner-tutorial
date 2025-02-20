@@ -16,12 +16,18 @@ const io = new Server(httpServer, {
 
 // Listen to the connection event
 io.on('connection', (socket) => {
-    console.log('A user has connected'); // Log a message when a user connects
+    // Log a message when a user connects
+    console.log('A user has connected'); 
 
-    // Listen to the message event from the client side
-    socket.on('message', (message) => {
-        console.log(message); // Log the message to the console 
-        
+    // Log the socket id of the connected user
+    console.log('User socket id is: ', socket.id);
+    
+    socket.emit('message', 'Hello from the server'); // Emit a message to the client side
+
+    // listen to the message event from the client side
+    socket.on('message', (data) => {
+        // Log the message received from the client
+        console.log('Message from the client: ', data);
     });
 
     // listen to the disconnect event from the client side
