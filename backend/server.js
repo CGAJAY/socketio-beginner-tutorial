@@ -5,13 +5,10 @@ import cors from 'cors';
 
 const app = express(); // Create a new express app
 const PORT = 5000; // Define the port number
-
 const corsOptions = {
     origin: 'http://localhost:3000', // Allow requests from the client side
     credentials: true,
 };
-
-app.use(cors(corsOptions)); // Apply the cors options to the express app
 
 // Create an http server by passing the express app
 const httpServer = createServer(app);
@@ -24,6 +21,9 @@ const io = new Server(httpServer, {
     }
 }); 
 
+app.use(cors(corsOptions)); // Apply the cors options to the express app
+app.use(express.json()); // Allow the express app to parse incoming json payloads
+
 // Create a route to handle the root path
 app.get('/', (req, res) => {
     res.status(200).json({message: 'Silence is golden'});
@@ -32,27 +32,38 @@ app.get('/', (req, res) => {
 // Listen to the connection event
 io.on('connection', (socket) => {
     // Log a message when a user connects
-    console.log('A user has connected'); 
+    console.log(`A user has connected ${socket.id}`); 
 
-    // Log the socket id of the connected user
-    console.log('User socket id is: ', socket.id);
-    
-    socket.emit('message', 'Hello from the server'); // Emit a message to the client side
+    // METHOD 1: SEND THE MESSAGE ONLY TO THE SENDER 
+    socket.on('formSubmit', ({name, message}) => {
+        // Log the name and message to the console
+        console.log(`Name: ${name}, Message: ${message}`);
 
-    // listen to the message event from the client side
-    socket.on('message', (data) => {
-        // Log the message received from the client
-        console.log('Message from the client: ', data);
+        const responseMessage = `${name} says: ${message}`;
+
+    // Send the response ONLY to the sender
+    socket.emit("formResponse", responseMessage);
     });
 
-    // listen to the disconnect event from the client side
+    // METHOD 2: BROADCAST THE MESSAGE TO ALL CONNECTED CLIENTS
+    // socket.on('formSubmit', ({name, message}) => {
+    //     const responseMessage = `${name} says: ${message}`;
+
+    //     // Send the response to all connected clients
+    //     io.emit("formResponse", responseMessage);
+    // });
+
+    // Listen to the disconnect event
     socket.on('disconnect', () => {
-        console.log('A user has disconnected'); // Log a message when a user disconnects
+        // Log a message when a user disconnects
+        console.log(`A user has disconnected ${
+            socket.id
+        }`);
     });
 });
+
     
 // Start the server on the specified ports
 httpServer.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
-
