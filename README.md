@@ -17,8 +17,7 @@ The repository contains multiple branches to separate concerns:
 
 1. **`basic-socket-setup`** - Implements a minimal WebSocket setup.
 2. **`express-integration`** - Sets up the Express server with basic API routes.
-3. **`frontend-form-state`** - Manages form state in Next.js with React hooks.
-4. **`main`** - The stable and fully functional version of the app.
+3. **`main`** - The stable and fully functional version of the app. Manages form state in Next.js with React hooks.
 
 Each branch builds upon the previous ones, allowing step-by-step learning.
 
